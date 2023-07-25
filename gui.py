@@ -1,9 +1,8 @@
 import json
 from PyQt6 import QtWidgets
-from PyQt6 import QtGui
 
-from gui_classes import CategoryFrame
 from gui_classes import MenuAction
+from database import get_databases_names
 
 class MainWindow(QtWidgets.QApplication):
     def __init__(self):
@@ -24,13 +23,8 @@ class MainWindow(QtWidgets.QApplication):
 
         workspace_menu = self.main_menu.addMenu('Рабочие среды')
         categoty_menu = self.main_menu.addMenu('Разделы')
+        entry_menu = self.main_menu.addMenu('Вхождения')
         service_menu = self.main_menu.addMenu('Сервис')
-
-        add_category_action = MenuAction('Создать',
-                                         'Ctrl+A',
-                                         self.create_category,
-                                         self.window)
-        categoty_menu.addAction(add_category_action)
 
         add_workspace_action = MenuAction('Создать',
                                           'Ctrl+N',
@@ -44,6 +38,16 @@ class MainWindow(QtWidgets.QApplication):
                                              self.window)
         workspace_menu.addAction(select_workspace_action)
 
+        add_category_action = MenuAction('Создать',
+                                         'Ctrl+C',
+                                         self.create_category,
+                                         self.window)
+        categoty_menu.addAction(add_category_action)
+
+        add_entry_action = MenuAction('Создать',
+                                      'Ctrl+A',
+                                      )
+
         exit_action = MenuAction('Выйти',
                                  'Ctrl+Q',
                                  self.exit,
@@ -53,19 +57,17 @@ class MainWindow(QtWidgets.QApplication):
         self.status_bar.showMessage('Программа загружена')
         self.window.show()
 
-    def create_category(self, category):
-        text_field = QtWidgets.QInputDialog()
-        text_field.setLabelText('Название раздела:')
-        text_field.show()
-        text_field.exec()
+    def create_category(self):
+        name_dialog = QtWidgets.QInputDialog()
+        name_dialog.setLabelText('Название раздела:')
+        name_dialog.show()
+        name_dialog.exec()
         if not self.active_workspace:
             self.status_bar.showMessage('Нет активной рабочей среды')
         else:
-            with open(f'workspaces/{self.active_workspace}.json', 'w') as workspace_file:
-                workspace_dict = json.loads(workspace_file)
-                workspace_dict['categories'].append(category)
+            self.active_category = name_dialog.textValue()
 
-    def create_workspace(self, workspace):
+    def create_workspace(self):
         name_dialog = QtWidgets.QInputDialog()
         name_dialog.setLabelText('Название рабочей среды:')
         name_dialog.show()
@@ -73,9 +75,9 @@ class MainWindow(QtWidgets.QApplication):
         self.active_workspace = name_dialog.textValue()
         self.status_bar.showMessage('Рабочая среда создана, но не сохранена')
 
-    def load_workspace(self, workspace):
-        with open(f'workspaces/{workspace}.json') as workspace_file:
-            pass
+    def load_workspace(self):
+        workspaces = get_databases_names()
+        print(workspaces)
 
 
 if __name__ == '__main__':

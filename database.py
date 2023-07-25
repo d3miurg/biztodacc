@@ -3,14 +3,11 @@ from pymongo import MongoClient
 session = MongoClient('mongodb://localhost/')
 
 
-class AbstractEntry():
-    def __init__(self, parent, name, **additional):
-        self.parent = parent
-        self.name = name
-
-
 def get_databases_names():
-    return session.list_database_names()[3:]
+    names = session.list_database_names()
+    for i in ('admin', 'config', 'local'):
+        names.remove(i)
+    return names
 
 
 def create_entry(database, table, entry):
