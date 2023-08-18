@@ -10,5 +10,5 @@ def get_databases_names():
     return names
 
 
-def create_entry(database, table, entry):
+def create_new_entry(database, table, entry):
     session[database][table].insert_one(entry)

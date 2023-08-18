@@ -3,6 +3,7 @@ from PyQt6 import QtWidgets
 
 from gui_classes import MenuAction
 from database import get_databases_names
+from database import create_new_entry
 
 class MainWindow(QtWidgets.QApplication):
     def __init__(self):
@@ -27,26 +28,28 @@ class MainWindow(QtWidgets.QApplication):
         service_menu = self.main_menu.addMenu('Сервис')
 
         add_workspace_action = MenuAction('Создать',
-                                          'Ctrl+N',
+                                          'Ctrl+N+W',
                                           self.create_workspace,
                                           self.window)
         workspace_menu.addAction(add_workspace_action)
 
         select_workspace_action = MenuAction('Загрузить',
-                                             'Ctrl+L',
+                                             'Ctrl+L+W',
                                              self.load_workspace,
                                              self.window)
         workspace_menu.addAction(select_workspace_action)
 
         add_category_action = MenuAction('Создать',
-                                         'Ctrl+C',
+                                         'Ctrl+N+C',
                                          self.create_category,
                                          self.window)
         categoty_menu.addAction(add_category_action)
 
-        add_entry_action = MenuAction('Создать',
-                                      'Ctrl+A',
-                                      )
+        create_entry_action = MenuAction('Создать',
+                                         'Ctrl+N+E',
+                                         self.create_entry,
+                                         self.window)
+        entry_menu.addAction(create_entry_action)
 
         exit_action = MenuAction('Выйти',
                                  'Ctrl+Q',
@@ -78,6 +81,15 @@ class MainWindow(QtWidgets.QApplication):
     def load_workspace(self):
         workspaces = get_databases_names()
         print(workspaces)
+
+    def create_entry(self):
+        name_dialog = QtWidgets.QInputDialog()
+        name_dialog.setLabelText('Название рабочей среды:')
+        name_dialog.show()
+        name_dialog.exec()
+        create_new_entry(self.active_workspace,
+                         self.active_category,
+                         name_dialog.textValue())
 
 
 if __name__ == '__main__':
